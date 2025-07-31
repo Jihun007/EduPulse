@@ -1,28 +1,12 @@
-# 📝EduPulse
-- 온라인 수업 접근성과 만족도 분석 프로젝트의 개발 환경 및 실행 방법 안내
+## 사용 기술 요약
 
-이 문서는 온라인 수업 접근성과 만족도 분석 프로젝트 개발환경을 구성하고 실행하기 위한 가이드를 제공합니다.
+- **언어/환경**: Python 3.10.11, Jupyter Notebook, Streamlit
+- **가상환경**: venv 또는 conda 권장
+- **주요 라이브러리**: pandas, streamlit, matplotlib 등
+- **DB**: SQLite (로컬 파일 기반)
+- **OS**: Windows 11 기준 개발
 
-
-## 프로젝트 개요
-- 
-
-
-## 🖥️ 사용한 기술
-- OS: Windows 11 이상, macOS, Linux (Windows 11 권장)  
-- Python: 3.10.11 이상
-- anaconda: 25.5.1 (데이터 분석을 위해 사용)  
-- SQLite: 0.14.1
-- Streamlit: 1.47.0
-- Jupyter notebook: 7.3.2
-- 가상환경 권장 (venv 또는 conda 사용 권장)
-
-
-## 💡 실행 화면
-*프로젝트 실행 시 주요 화면 또는 기능 스크린샷을 여기에 추가.*
-
-
-## ❓ 설치 및 실행 방법
+## 설치 및 실행 방법
 
 ### 1. 저장소 클론 및 프로젝트 폴더 이동
 ```bash

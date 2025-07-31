@@ -92,6 +92,9 @@ jupyter notebook
 ```
 streamlit run ....py
 ```
+
+### 간편 실행만 원하는 경우, README.env.md를 참고하세요.
+
 # 주요 화면 예시 (추후 추가)
 
 # License
