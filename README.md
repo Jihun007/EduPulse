@@ -69,6 +69,7 @@ EduPulse/
 - 필수 패키지 : `requirements.txt` 참고
 
 2. 가상환경 생성 (권장)
+```
 # venv 사용 시
 python -m venv venv
 source venv/bin/activate      # Mac/Linux
@@ -77,17 +78,20 @@ venv\Scripts\activate         # Windows
 # 또는 conda 사용 시
 conda create -n accessenv python=3.9
 conda activate accessenv
-
+```
 3. 필수 패키지 설치
+```
 pip install -r requirements.txt
-
+```
 4. Jupyter Notebook 사용 (데이터 탐색/분석 단계)
+```
 pip install jupyter
 jupyter notebook
-
+```
 5. Streamlit 대시보드 실행 (결과 시각화)
+```
 streamlit run ....py
-
+```
 # 주요 화면 예시 (추후 추가)
 
 # License
