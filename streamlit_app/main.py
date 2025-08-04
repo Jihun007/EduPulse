@@ -11,7 +11,7 @@ def main():
     # if st.session_state.get("page"):
     #     page = st.session_state["page"]
         
-    st.write(page)
+    #st.write(page)
     
     if page == "":
         st.write("메인페이지")
