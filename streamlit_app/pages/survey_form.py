@@ -10,15 +10,6 @@ def getquestion():
         },
         {
             "id": "1-1",
-            "text": "성별",
-            "type": "radio",
-            "options": [
-                "남성",
-                "여성",
-            ]
-        },
-        {
-            "id": "1-2",
             "text": "연령",
             "type": "radio",
             "options": [
@@ -26,7 +17,7 @@ def getquestion():
             ]
         },
         {
-            "id": "1-3",
+            "id": "1-2",
             "text": "지역",
             "type": "selectbox",
             "options": [
@@ -35,19 +26,23 @@ def getquestion():
             ]
         },
         {
-            "id": "1-4",
+            "id": "1-3",
             "text": "최종 학력",
             "type": "radio",
             "options": [
-                "초등학교", "중학교", "대학교(2년제)", "대학교(4년제)", "대학원", "기타"
+                 "중학교 졸업 이하", "고등학교 졸업", "전문대학(2~3년제) 졸업",
+                 "대학교(4년제) 졸업", "대학원 졸업 이상", "기타"
             ]
         },
         {
-            "id": "1-5",
+            "id": "1-4",
             "text": "가구 월평균 소득",
-            "type":"",
-            # "type": "radio",
+            "type": "radio",
             "options": [   
+                "100만 원 미만",                "100만 원 이상 ~ 200만 원 미만", "200만 원 이상 ~ 300만 원 미만",
+                "300만 원 이상 ~ 400만 원 미만", "400만 원 이상 ~ 500만 원 미만", "500만 원 이상 ~ 600만 원 미만",
+                "600만 원 이상 ~ 700만 원 미만", "700만 원 이상 ~ 800만 원 미만", "800만 원 이상 ~ 900만 원 미만",
+                "900만 원 이상 ~ 1000만 원 미만", "1000만 원 이상","응답 거절 / 모르겠음"
             ]
         },
         {
@@ -145,7 +140,53 @@ def getquestion():
     return questions
 
 def survey():
-    # st.set_page_config(initial_sidebar_state="collapsed")
+    
+    st.markdown("""
+        <style>
+        /* 1. 라디오 버튼 그룹의 컨테이너 설정 */
+        div.stRadio > label {
+            flex-direction: row; /* 라벨과 라디오 버튼을 가로로 정렬 (큰 의미 없음) */
+            align-items: flex-start; /* 라디오 그룹 전체를 상단 정렬 (기본) */
+        }
+
+        /* 2. 실제 라디오 옵션들이 들어있는 컨테이너 (role="radiogroup") */
+        div.stRadio div[role="radiogroup"] {
+            display: flex; /* Flexbox 레이아웃 사용 */
+            flex-wrap: wrap; /* 공간 부족 시 다음 줄로 넘김 */
+            gap: 15px 20px; /* 세로 간격 15px, 가로 간격 20px (조정 가능) */
+            /* justify-content: flex-start; */ /* 왼쪽 정렬 (기본) */
+            /* justify-content: center; */ /* 가운데 정렬 (필요시) */
+        }
+
+        /* 3. 각 개별 라디오 옵션 (버튼 원 + 텍스트)의 스타일 */
+        div.stRadio div[data-baseweb="radio"] {
+            /* flex-basis: calc(33.33% - 20px); */ /* 3개씩 한 줄에 배치 (가로 간격 고려) */
+            /* flex-basis는 컨텐츠의 기본 크기를 지정합니다. */
+            width: calc(33.33% - 20px); /* 3개씩 한 줄에 배치 (가로 간격 고려) */
+            /* width를 직접 지정하는 것이 더 예측 가능할 때가 있습니다. */
+            min-width: 150px; /* 최소 너비 (텍스트가 잘리지 않도록) */
+            margin-right: 0px; /* 기본 마진 제거 */
+            margin-bottom: 0px; /* 기본 마진 제거 */
+            box-sizing: border-box; /* 패딩과 보더가 width에 포함되도록 */
+        }
+
+        /* 4. 라디오 버튼 원과 텍스트를 감싸는 내부 라벨 (가로 정렬, 세로 중앙 정렬) */
+        div.stRadio label > div:first-child { /* 라디오 원을 감싸는 div */
+            align-self: center; /* 라디오 원을 텍스트의 세로 중앙에 맞춤 */
+        }
+        div.stRadio span[data-testid="stRadioInlineLabel"] {
+            margin-left: 5px; /* 라디오 원과 텍스트 사이 간격 */
+            flex-grow: 1; /* 텍스트가 남은 공간을 채우도록 */
+            display: flex; /* 텍스트 자체도 Flexbox로 (필요시) */
+            align-items: center; /* 텍스트 내부 정렬 (필요시) */
+            min-height: 2em; /* 텍스트가 여러 줄일 때 대비 (선택 사항) */
+        }
+
+        /* 5. Streamlit의 기본 라디오 버튼 라벨 (질문 텍스트)이 있다면, 이 CSS는 그 라벨의 레이아웃을 건드리지 않도록 합니다. */
+        /* 만약 st.radio의 첫 번째 인자로 질문 텍스트를 넣었다면, 그 텍스트 스타일링은 별도로 고려해야 합니다. */
+        </style>
+        """, unsafe_allow_html=True)
+    
 
     st.header("온라인 학습 환경과 경험에 대한 실태조사")
 
@@ -184,11 +225,12 @@ def survey():
         option_to_num = {opt: i+1 for i, opt in enumerate(qoptions)}  
 
         if qtype == "radio":
+            
             st.markdown(f"<p style='font-size:16px; font-weight:bold;'>{qtitle}</p>", unsafe_allow_html=True)
             answer = st.radio("", options=qoptions, key=qid, horizontal=True, index=None)
             res = option_to_num.get(answer)
             responses[qid] = res
-
+            
             if q.get("has_etc") and answer == "기타":
                 etc_input = st.text_input(q.get("etc_q", "기타 내용을 입력하세요"), key=f"{qid}_etc")
                 etc_dict[qid] = etc_input
@@ -230,7 +272,9 @@ def survey():
             
         else:
             continue
-
+        
+        st.write()
+        st.write()
 
     # 제출 버튼만 form으로 묶기 (submit 용)
     with st.form("submit_form"):
@@ -269,14 +313,12 @@ def survey():
                 break
         
         if is_valid:
+
+            # dictionary 형태로 진행
             final_responses = responses.copy()
-            # etc_dict를 JSON 문자열로 변환
-            final_responses["etc_text"] = json.dumps(etc_dict, ensure_ascii=False)
-            st.session_state['form_data'] = final_responses
+            final_responses.update(etc_dict)
             
-            # 데이터 확인용
-            st.write("설문 응답 결과:")
-            st.json(final_responses)
+            st.session_state['form_data'] = final_responses
             
             # 페이지 이동
             st.switch_page("pages/survey_result.py") # 'result.py'로 변경합니다.
