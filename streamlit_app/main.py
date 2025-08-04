@@ -9,6 +9,11 @@ def main():
     
     page = st.query_params.get("page", [""])[0]
     
+    # if st.session_state.get("page"):
+    #     page = st.session_state["page"]
+        
+    st.write(page)
+    
     if page == "":
         dash.show()
     # elif page == "survey_form":
