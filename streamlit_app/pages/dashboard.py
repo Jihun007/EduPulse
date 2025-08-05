@@ -15,7 +15,7 @@ with title1:
     st.title('EduPulse Dashboard')
 with title2:
     # 만족도조사 참여하기 버튼
-    st.button('만족도조사 참여하기', key='surveyBtn1', on_click=fn_goPage('survey_form'))
+    st.button('만족도조사 참여하기', key='surveyBtn1')
 
 
 # 플랫폼 한 줄 소개
@@ -201,4 +201,4 @@ st.markdown("<br />", unsafe_allow_html=True)
 survey1, survey2, survey3 = st.columns(3)
 with survey2:
     # 만족도조사 참여하기 버튼
-    st.button('만족도조사 참여하기', key='surveyBtn2', on_click=fn_goPage('survey_form'))
+    st.button('만족도조사 참여하기', key='surveyBtn2')
