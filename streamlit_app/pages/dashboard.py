@@ -1,5 +1,5 @@
 import streamlit as st
-from common import move_to
+from common import move_to, assets_get_img
 
 # 페이지 이동 함수 지정
 def fn_goPage(page):
@@ -11,9 +11,10 @@ def toggle_info():
 
 def run():
     
-    title1, title2 = st.columns([3, 1])
+    title1, title2 = st.columns([6, 1])
 
     with title1:
+        st.image(assets_get_img('logo.png'))
         # 제목
         st.title('EduPulse Dashboard')
     with title2:
@@ -61,13 +62,16 @@ def run():
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        highestEduSelectBox = st.selectbox('**최종학력** : ', highestEdu)
+        #highestEduSelectBox = st.selectbox('**최종학력** : ', highestEdu)
+        highestEduBtn = st.button('**최종학력**', key='filter1')
         
     with col2:
-        ageSelectBox = st.selectbox('**연령대** : ', age)
+        #ageSelectBox = st.selectbox('**연령대** : ', age)
+        ageBtn = st.button('**연령대**', key='filter2')
 
     with col3:
-        averageMonIncomeSelectBox = st.selectbox('**월평균 소득** : ', averageMonIncome)
+        #averageMonIncomeSelectBox = st.selectbox('**월평균 소득** : ', averageMonIncome)
+        averageMonIncomeBtn = st.button('**월평균 소득**', key='filter3')
 
     # 줄바꿈
     st.markdown("<br />", unsafe_allow_html=True)

@@ -1,5 +1,6 @@
 import streamlit as st
 import streamlit.components.v1 as components
+from pathlib import Path
 
 # 페이지 상태 초기화 (main)
 def init_page(default='main'):
@@ -25,3 +26,6 @@ def scroll_to_top():
         """,
         height=0,
     )
+# 현재 파일 기준으로 절대 경로 생성   
+def assets_get_img(img_name):
+    return Path(__file__).parent.parent / 'assets' / img_name
