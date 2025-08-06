@@ -1,0 +1,15 @@
+import streamlit as st
+
+# 페이지 상태 초기화 (main)
+def init_page(default='main'):
+    if 'page' not in st.session_state:
+        st.session_state['page'] = default
+
+# 다른 페이지로 이동하는 함수
+def move_to(page_name: str):
+    st.session_state['page'] = page_name
+    st.rerun()
+
+# 현재 페이지 반환 함수 : page키가 없을 경우 기본값으로 main 반환
+def current_page():
+    return st.session_state.get('page', 'main')  

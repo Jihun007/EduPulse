@@ -1,5 +1,6 @@
 import streamlit as st
 import json
+from common import move_to
 
 def getquestion():
     questions = [
@@ -245,7 +246,7 @@ def survey():
             qid = q["id"]
             qtext = q["text"]
             qtype = q["type"]
-            
+
             if qtype == "radio" or qtype == "selectbox":
                 if responses.get(qid) is None:
                     is_valid = False
@@ -279,7 +280,7 @@ def survey():
             st.json(final_responses)
             
             # 페이지 이동
-            st.switch_page("pages/survey_result.py") # 'result.py'로 변경합니다.
+            move_to('survey_result')
         else:
             st.error(error_message)
         
