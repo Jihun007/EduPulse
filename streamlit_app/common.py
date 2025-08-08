@@ -26,6 +26,10 @@ def scroll_to_top():
         """,
         height=0,
     )
-# 현재 파일 기준으로 절대 경로 생성   
+# 현재 파일 기준으로 이미지 절대 경로 생성   
 def assets_get_img(img_name):
     return Path(__file__).parent.parent / 'assets' / img_name
+
+# 현재 파일 기준으로 csv 절대 경로 생성   
+def data_get_csv(csv_name):
+    return Path(__file__).parent.parent / 'data/processed' / csv_name
