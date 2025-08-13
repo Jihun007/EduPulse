@@ -37,17 +37,20 @@ def run():
     title1, title2 = st.columns([6, 1])
 
     with title1:
-        st.image(assets_get_img('logo.png'))
-        # 제목
-        st.title('EduPulse Dashboard')
+        st.image(assets_get_img('logo.png'), width=700)
     with title2:
         # 만족도조사 참여하기 버튼
         if st.button('만족도조사 참여하기', key='surveyBtn1'):
             move_to('survey_form')
 
+    # 줄바꿈
+    st.markdown("<br /><br />", unsafe_allow_html=True)
 
     # 플랫폼 한 줄 소개
-    st.markdown('**EduPusle Dashboard**는 디지털 교육 격차의 실태를 한눈에 보여주고, 정책 수립에 필요한 인사이트를 제공하는 데이터 기반 시각화 플랫폼입니다.')
+    # st.markdown('**EduPusle Dashboard**는 디지털 교육 격차의 실태를 한눈에 보여주고, 정책 수립에 필요한 인사이트를 제공하는 데이터 기반 시각화 플랫폼입니다.')
+
+    # 배너
+    st.image(assets_get_img('banner.png'))
 
     # 소개 글
     text = '''
@@ -66,12 +69,22 @@ def run():
         st.session_state['show_info'] = False
 
     # 'EduPulse란?' 버튼 클릭 시 토글 발동
-    if st.button('EduPulse란?', type="secondary", key='eduPulseBtn'):
-        toggle_info()
+    #if st.button('EduPulse란?', type="secondary", key='eduPulseBtn'):
+    #   toggle_info()
 
     # show_info 상태가 False 일 경우 소개글 보임
     if st.session_state.get('show_info', False): 
         st.info(text)
+
+    # 줄바꿈
+    st.markdown("<br /><br /><br />", unsafe_allow_html=True)
+    
+    # 탭
+    tab = st.tabs(['EduPulse란?'])
+
+    with tab[0]:
+        st.image(assets_get_img('tab.png'))
+        
 
     # 전체 필터 구역
     #st.markdown('#### 전체 필터')
@@ -97,7 +110,7 @@ def run():
         #averageMonIncomeBtn = st.button('**월평균 소득**', key='filter3')
 
     # 줄바꿈
-    st.markdown("<br />", unsafe_allow_html=True)
+    st.markdown("<br /><br /><br />", unsafe_allow_html=True)
 
     #디지털 격차 한 눈에 보기
     #st.markdown('#### 디지털 격차 한 눈에 보기')
@@ -121,9 +134,6 @@ def run():
     #    """,
     #   unsafe_allow_html=True
     #)
-
-    # 줄바꿈
-    st.markdown("<br />", unsafe_allow_html=True)
 
     # 각 차트 2구역 나누기
     chart1, chart2 = st.columns(2)
@@ -179,10 +189,10 @@ def run():
         st.text('막대그래프를 통해 디지털 기기 미보유 비율을 확인할 수 있습니다.')
 
         if csv_file is not None:
-            # 🔽 파일 읽기 (CSV 또는 XLSX 자동 감지)
+            # 파일 읽기 (CSV 또는 XLSX 자동 감지)
             df = csv_file
 
-            # 📊 필요한 열 추출
+            # 필요한 열 추출
             try:
                 df = df.iloc[:, [2, 3, 4, 5, 15]]
                 df.columns = ['데스크탑', '노트북', '휴대전화', '스마트패드', '학력']
@@ -190,7 +200,7 @@ def run():
                 st.error(f"열 인덱스를 읽는 중 오류 발생: {e}")
                 st.stop()
 
-            # ✅ 디지털 기기 보유 여부 판단
+            # 디지털 기기 보유 여부 판단
             def check_device_ownership(row):
                 return '보유' if (
                     row['데스크탑'] == 1 or
@@ -205,7 +215,7 @@ def run():
             edu_map = {1: '초등 이하', 2: '중졸', 3: '고졸', 4: '대졸'}
             df['학력'] = df['학력'].map(edu_map)
 
-            # 📈 학력별 보유/미보유 비율 계산
+            # 학력별 보유/미보유 비율 계산
             pivot = pd.crosstab(df['학력'], df['보유여부'], normalize='index') * 100
             if '보유' not in pivot.columns:
                 pivot['보유'] = 0
@@ -216,11 +226,11 @@ def run():
             order = ['초등 이하', '중졸', '고졸', '대졸']
             pivot = pivot.reindex(order)
 
-            # 🎨 시각화
+            # 시각화
             fig, ax = plt.subplots(figsize=(10, 6))
             pivot.plot(kind='barh', stacked=True, ax=ax, color=['#66b3ff', '#ff9999'])
 
-            # 📌 막대 안 퍼센트 텍스트 표시
+            # 막대 안 퍼센트 텍스트 표시
             for i, (idx, row) in enumerate(pivot.iterrows()):
                 x_pos = 0
                 for val in row:
@@ -234,14 +244,14 @@ def run():
             ax.legend(title='보유 여부', loc='upper left')
             plt.tight_layout()
 
-            # 📤 Streamlit에 출력
+            # Streamlit에 출력
             st.pyplot(fig)
 
         else:
             st.info("잠시 후 다시 접속해주세요.")
 
     # 줄바꿈
-    st.markdown("<br />", unsafe_allow_html=True)
+    st.markdown("<br /><br /><br />", unsafe_allow_html=True)
 
     width1, width2, width3 = st.columns([1, 8, 1])
 
@@ -307,7 +317,7 @@ def run():
         ''
 
     # 줄바꿈
-    st.markdown("<br />", unsafe_allow_html=True)
+    st.markdown("<br /><br /><br />", unsafe_allow_html=True)
 
     #만족도조사
     st.markdown('#### 만족도조사')
@@ -336,7 +346,7 @@ def run():
     st.markdown("<br />", unsafe_allow_html=True)
 
     # 버튼 가운데
-    survey1, survey2, survey3 = st.columns(3)
+    survey1, survey2, survey3 = st.columns([2, 1, 2])
     with survey2:
         # 만족도조사 참여하기 버튼
         if st.button('만족도조사 참여하기', key='surveyBtn2'):
