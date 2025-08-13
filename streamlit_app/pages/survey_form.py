@@ -1,5 +1,11 @@
 import streamlit as st
-import json
+from common import move_to
+
+# st.session_state 초기화
+# if 'responses' not in st.session_state:
+#     st.session_state.responses = {
+#         "2-1": "아니오" 
+#     }
 
 def getquestion():
     questions = [
@@ -10,6 +16,15 @@ def getquestion():
         },
         {
             "id": "1-1",
+            "text": "성별",
+            "type": "radio",
+            "options": [
+                "남성",
+                "여성",
+            ]
+        },
+        {
+            "id": "1-2",
             "text": "연령",
             "type": "radio",
             "options": [
@@ -17,7 +32,7 @@ def getquestion():
             ]
         },
         {
-            "id": "1-2",
+            "id": "1-3",
             "text": "지역",
             "type": "selectbox",
             "options": [
@@ -26,23 +41,19 @@ def getquestion():
             ]
         },
         {
-            "id": "1-3",
+            "id": "1-4",
             "text": "최종 학력",
             "type": "radio",
             "options": [
-                 "중학교 졸업 이하", "고등학교 졸업", "전문대학(2~3년제) 졸업",
-                 "대학교(4년제) 졸업", "대학원 졸업 이상", "기타"
+                "초등학교", "중학교", "대학교(2년제)", "대학교(4년제)", "대학원", "기타"
             ]
         },
         {
-            "id": "1-4",
+            "id": "1-5",
             "text": "가구 월평균 소득",
-            "type": "radio",
+            "type":"",
+            # "type": "radio",
             "options": [   
-                "100만 원 미만",                "100만 원 이상 ~ 200만 원 미만", "200만 원 이상 ~ 300만 원 미만",
-                "300만 원 이상 ~ 400만 원 미만", "400만 원 이상 ~ 500만 원 미만", "500만 원 이상 ~ 600만 원 미만",
-                "600만 원 이상 ~ 700만 원 미만", "700만 원 이상 ~ 800만 원 미만", "800만 원 이상 ~ 900만 원 미만",
-                "900만 원 이상 ~ 1000만 원 미만", "1000만 원 이상","응답 거절 / 모르겠음"
             ]
         },
         {
@@ -57,6 +68,7 @@ def getquestion():
             "options": [
                 "예", "아니오"
             ],
+            "set_qst" : True,
         },
         {
             "id": "2-2",
@@ -66,7 +78,9 @@ def getquestion():
                 "데스크탑 PC(컴퓨터)", "노트북(컴퓨터)", "휴대폰", "태블릿 PC", "프린터", "웹캠", "기타"
             ],
             "has_etc": True,
-            "etc_q":"기타 기기를 입력하세요"
+            "etc_q":"기타 기기를 입력하세요",
+            "folded" : True,
+            "parent": "2-1"
         },
         {
             "id": "2-3",
@@ -76,10 +90,12 @@ def getquestion():
                 "내 방에서", "가족과 함께 쓰는 공용 공간에서(예: 거실)", "카페, PC방 등 집 밖에서", "학교 교실에서", "기타"
             ],
             "has_etc": True,
-            "etc_q":"기타 징소를 입력하세요"
+            "etc_q":"기타 징소를 입력하세요",
+            "folded" : True,
+            "parent": "2-1"
         },
         {
-            "id": "4",
+            "id": "3",
             "text":"지난 학기 또는 최근 몇 차례의 온라인 수업 경험을 기준으로 대답하세요.",
             "type":"none",
         },
@@ -139,54 +155,22 @@ def getquestion():
     ]
     return questions
 
-def survey():
-    
-    st.markdown("""
+# CSS 인젝션을 위한 HTML 코드
+# .stRadio의 부모 요소와 padding을 제거하고, 라디오 버튼 레이블의 마진도 조절합니다.
+custom_css = """
         <style>
-        /* 1. 라디오 버튼 그룹의 컨테이너 설정 */
-        div.stRadio > label {
-            flex-direction: row; /* 라벨과 라디오 버튼을 가로로 정렬 (큰 의미 없음) */
-            align-items: flex-start; /* 라디오 그룹 전체를 상단 정렬 (기본) */
+        .stRadio > div {
+            padding-top: 0px !important;
         }
-
-        /* 2. 실제 라디오 옵션들이 들어있는 컨테이너 (role="radiogroup") */
-        div.stRadio div[role="radiogroup"] {
-            display: flex; /* Flexbox 레이아웃 사용 */
-            flex-wrap: wrap; /* 공간 부족 시 다음 줄로 넘김 */
-            gap: 15px 20px; /* 세로 간격 15px, 가로 간격 20px (조정 가능) */
-            /* justify-content: flex-start; */ /* 왼쪽 정렬 (기본) */
-            /* justify-content: center; */ /* 가운데 정렬 (필요시) */
+        .stRadio > div > label {
+            margin-bottom: 0px !important;
         }
-
-        /* 3. 각 개별 라디오 옵션 (버튼 원 + 텍스트)의 스타일 */
-        div.stRadio div[data-baseweb="radio"] {
-            /* flex-basis: calc(33.33% - 20px); */ /* 3개씩 한 줄에 배치 (가로 간격 고려) */
-            /* flex-basis는 컨텐츠의 기본 크기를 지정합니다. */
-            width: calc(33.33% - 20px); /* 3개씩 한 줄에 배치 (가로 간격 고려) */
-            /* width를 직접 지정하는 것이 더 예측 가능할 때가 있습니다. */
-            min-width: 150px; /* 최소 너비 (텍스트가 잘리지 않도록) */
-            margin-right: 0px; /* 기본 마진 제거 */
-            margin-bottom: 0px; /* 기본 마진 제거 */
-            box-sizing: border-box; /* 패딩과 보더가 width에 포함되도록 */
-        }
-
-        /* 4. 라디오 버튼 원과 텍스트를 감싸는 내부 라벨 (가로 정렬, 세로 중앙 정렬) */
-        div.stRadio label > div:first-child { /* 라디오 원을 감싸는 div */
-            align-self: center; /* 라디오 원을 텍스트의 세로 중앙에 맞춤 */
-        }
-        div.stRadio span[data-testid="stRadioInlineLabel"] {
-            margin-left: 5px; /* 라디오 원과 텍스트 사이 간격 */
-            flex-grow: 1; /* 텍스트가 남은 공간을 채우도록 */
-            display: flex; /* 텍스트 자체도 Flexbox로 (필요시) */
-            align-items: center; /* 텍스트 내부 정렬 (필요시) */
-            min-height: 2em; /* 텍스트가 여러 줄일 때 대비 (선택 사항) */
-        }
-
-        /* 5. Streamlit의 기본 라디오 버튼 라벨 (질문 텍스트)이 있다면, 이 CSS는 그 라벨의 레이아웃을 건드리지 않도록 합니다. */
-        /* 만약 st.radio의 첫 번째 인자로 질문 텍스트를 넣었다면, 그 텍스트 스타일링은 별도로 고려해야 합니다. */
         </style>
-        """, unsafe_allow_html=True)
-    
+    """
+st.markdown(custom_css, unsafe_allow_html=True)
+
+def survey():
+    # st.set_page_config(initial_sidebar_state="collapsed")
 
     st.header("온라인 학습 환경과 경험에 대한 실태조사")
 
@@ -214,6 +198,7 @@ def survey():
     responses = {}
     etc_dict = {}
 
+
     # form 밖에서 문항 UI 렌더링
     for q in questions:
         qid = q["id"]
@@ -221,29 +206,40 @@ def survey():
         qtype = q["type"]
         qtitle = qid + ". " + qtext
         qoptions = q.get("options", [])
+        parent_id = q.get("parent")
         
         option_to_num = {opt: i+1 for i, opt in enumerate(qoptions)}  
+        
+        if parent_id and st.session_state.get(parent_id) != "예":
+            continue
 
         if qtype == "radio":
-            
-            st.markdown(f"<p style='font-size:16px; font-weight:bold;'>{qtitle}</p>", unsafe_allow_html=True)
-            answer = st.radio("", options=qoptions, key=qid, horizontal=True, index=None)
+            st.markdown(f"<p style='font-size:16px; font-weight:bold; margin-bottom: -10rem;'>{qtitle}</p>", unsafe_allow_html=True)
+            answer = st.radio("", 
+            options=qoptions, key=qid, horizontal=True, index=None)
             res = option_to_num.get(answer)
             responses[qid] = res
+
+            # if q.get("has_etc") and answer == "기타":
+            #     etc_input = st.text_input(q.get("etc_q", "기타 내용을 입력하세요"), key=f"{qid}_etc")
+            #     etc_dict[qid] = etc_input
             
-            if q.get("has_etc") and answer == "기타":
-                etc_input = st.text_input(q.get("etc_q", "기타 내용을 입력하세요"), key=f"{qid}_etc")
-                etc_dict[qid] = etc_input
+            if qid == "2-1" and st.session_state.get("2-1") == "예":
+                st.markdown(f"<p style='font-size:16px; font-weight:bold;'>하위 질문입니다.</p>", unsafe_allow_html=True)
+            
+            if qid == "2-1" and st.session_state.get("2-1") == "아니오":
+                responses["2-2"] = None
+                responses["2-3"] = None
 
         elif qtype == "selectbox":
-            st.markdown(f"<p style='font-size:16px; font-weight:bold;'>{qtitle}</p>", unsafe_allow_html=True)
+            st.markdown(f"<p style='font-size:16px; font-weight:bold; margin-bottom: -10rem;'>{qtitle}</p>", unsafe_allow_html=True)
             answer = st.selectbox("", options=qoptions, key=qid, index=None)
             res = option_to_num.get(answer)
             responses[qid] = res
 
-            if q.get("has_etc") and selected == "기타":
-                etc_input = st.text_input(q.get("etc_q", "기타 내용을 입력하세요"), key=f"{qid}_etc")
-                etc_dict[qid] = etc_input
+            # if q.get("has_etc") and selected == "기타":
+            #     etc_input = st.text_input(q.get("etc_q", "기타 내용을 입력하세요"), key=f"{qid}_etc")
+            #     etc_dict[qid] = etc_input
 
         elif qtype == "checkbox":
             st.write(f"**{qtitle}**")
@@ -254,76 +250,89 @@ def survey():
                 key = f"{qid}_{i}"
                 if cols[i % 3].checkbox(option, key=key):
                     res = option_to_num.get(option)
-                    selected.append(res)
+                    selected.append(res) 
             responses[qid] = selected
 
-            # '기타' 선택 시 텍스트 입력창 노출
-            if q.get("has_etc") and st.session_state.get(f"{qid}_{qoptions.index('기타')}", False):
-                etc_input = st.text_input(q.get("etc_q", "기타 내용을 입력하세요"), key=f"{qid}_etc")
-                etc_dict[qid] = etc_input
+            # # '기타' 선택 시 텍스트 입력창 노출
+            # if q.get("has_etc") and st.session_state.get(f"{qid}_{qoptions.index('기타')}", False):
+            #     etc_input = st.text_input(q.get("etc_q", "기타 내용을 입력하세요"), key=f"{qid}_etc")
+            #     etc_dict[qid] = etc_input
 
         elif qtype == "text":
             text_input = st.text_input(f"**{qtitle}**", key=qid)
             responses[qid] = text_input
 
         elif qtype == "none":
-            st.divider()
+            if int(qid) > 1:
+                st.divider()
             st.markdown(f"<p style='font-size:22px; font-weight:bold;'>{qtitle}</p>", unsafe_allow_html=True)
             
         else:
-            continue
-        
-        st.write()
-        st.write()
+            continue    
+     
+    
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        button_container = st.container()
+    
+        with button_container:
+            if st.button("뒤로 가기"):
+                move_to('main')
 
-    # 제출 버튼만 form으로 묶기 (submit 용)
-    with st.form("submit_form"):
-        submitted = st.form_submit_button("제출")
-
-    if submitted:  
-        
-        # 데이터 검증
-        is_valid = True
-        error_message = ""
-        for q in questions:
-            qid = q["id"]
-            qtext = q["text"]
-            qtype = q["type"]
+            if st.button("최종 제출"):
+                
+                # 데이터 검증
+                is_valid = True
+                error_message = ""
+                        
+                for q in questions:
+                    qid = q["id"]
+                    qtext = q["text"]
+                    qtype = q["type"]          
+                    parent_id = q.get("parent")
             
-            if qtype == "radio" or qtype == "selectbox":
-                if responses.get(qid) is None:
-                    is_valid = False
-                    error_message = f"🚨 '{qtext}' 문항을 선택해주세요."
-                    break
-            elif qtype == "checkbox":
-                if not responses.get(qid): # 선택된 항목이 없으면
-                    is_valid = False
-                    error_message = f"🚨 '{qtext}' 문항을 하나 이상 선택해주세요."
-                    break
-            elif qtype == "text":
-                if not responses.get(qid): # 입력된 텍스트가 없으면
-                    is_valid = False
-                    error_message = f"🚨 '{qtext}' 문항에 내용을 입력해주세요."
-                    break
-        
-            # '기타' 항목의 텍스트 입력 검사
-            if q.get("has_etc") and qid in etc_dict and not etc_dict[qid]:
-                is_valid = False
-                error_message = f"🚨 '{qtext}' 문항의 기타 내용을 입력해주세요."
-                break
-        
-        if is_valid:
-
-            # dictionary 형태로 진행
-            final_responses = responses.copy()
-            final_responses.update(etc_dict)
-            
-            st.session_state['form_data'] = final_responses
-            
-            # 페이지 이동
-            st.switch_page("pages/survey_result.py") # 'result.py'로 변경합니다.
-        else:
-            st.error(error_message)
+                    
+                    if parent_id and st.session_state.get(parent_id) != "예":
+                        continue
+                        
+                    if qtype == "radio" or qtype == "selectbox":
+                        if responses.get(qid) is None:
+                            is_valid = False
+                            error_message = f"🚨 '{qtext}' 문항을 선택해주세요."
+                            break
+                    elif qtype == "checkbox":
+                        if not responses.get(qid): # 선택된 항목이 없으면
+                            is_valid = False
+                            error_message = f"🚨 '{qtext}' 문항을 하나 이상 선택해주세요."
+                            break
+                    elif qtype == "text":
+                        if not responses.get(qid): # 입력된 텍스트가 없으면
+                            is_valid = False
+                            error_message = f"🚨 '{qtext}' 문항에 내용을 입력해주세요."
+                            break
+                
+                    # '기타' 항목의 텍스트 입력 검사
+                    if q.get("has_etc") and qid in etc_dict and not etc_dict[qid]:
+                        is_valid = False
+                        error_message = f"🚨 '{qtext}' 문항의 기타 내용을 입력해주세요."
+                        break
+                
+                if is_valid:
+                    final_responses = responses.copy()
+                    # etc_dict를 JSON 문자열로 변환
+                    # final_responses["etc_text"] = json.dumps(etc_dict, ensure_ascii=False)
+                    st.session_state['form_data'] = final_responses
+                    
+                    # # 데이터 확인용
+                    # st.write("설문 응답 결과:")
+                    # print(f"결과:{final_responses}")
+                    # st.json(final_responses)
+                    
+                    # 페이지 이동
+                    move_to('survey_result')
+                    # st.switch_page("pages/survey_result.py")
+                else:
+                    st.error(error_message)
         
 
 if __name__ == "__main__":

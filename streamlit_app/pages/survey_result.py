@@ -1,7 +1,8 @@
 import streamlit as st
-from services import data_handlr as handlr
+from services import data_handlr as hdlr
+from common import move_to
 
-def show() :
+def finish():
     st.set_page_config(
         page_title="결과",
         page_icon="🎉",
@@ -43,14 +44,14 @@ def show() :
     col1, col2, col3 = st.columns([3, 2, 3])
     with col2:
         if st.button("메인으로", use_container_width=True):
-            st.switch_page("main.py") #통계화면으로 이동하도록 수정 필요
+            move_to('main') #통계화면으로 이동하도록 수정 필요
 
     # st.session_state에서 form.py에서 저장한 데이터를 가져옵니다.
     if 'form_data' in st.session_state:
         form_data = st.session_state.form_data
         
         # 데이터 처리
-        handlr.save(form_data)
+        hdlr.save(form_data)
         st.subheader("데이터 처리 결과")
         st.success("데이터가 저장되었습니다.")
         
@@ -63,7 +64,18 @@ def show() :
     else:
         st.warning("제출된 데이터가 없습니다. 설문조사 페이지로 이동하여 다시 시작해주세요.")
         if st.button("설문조사 페이지로 돌아가기"):
-            st.switch_page("pages/survey_form.py")
+            move_to('main')
+            
+    # 페이지 최상단으로 스크롤
+    js_code = """
+    <script>
+        window.onload = function() {
+            window.scrollTo(0, 0);
+        };
+    </script>
+    """
+    st.components.v1.html(js_code, height=0, width=0) # HTML 컴포넌트를 사용해 페이지에 JS 코드 삽입
+
 
 if __name__ == "__main__":
-    how()
+    finish()
