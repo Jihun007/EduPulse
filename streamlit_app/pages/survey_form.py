@@ -1,6 +1,6 @@
 import streamlit as st
-import json
 from common import move_to
+
 
 def getquestion():
     questions = [
@@ -11,15 +11,6 @@ def getquestion():
         },
         {
             "id": "1-1",
-            "text": "성별",
-            "type": "radio",
-            "options": [
-                "남성",
-                "여성",
-            ]
-        },
-        {
-            "id": "1-2",
             "text": "연령",
             "type": "radio",
             "options": [
@@ -27,7 +18,7 @@ def getquestion():
             ]
         },
         {
-            "id": "1-3",
+            "id": "1-2",
             "text": "지역",
             "type": "selectbox",
             "options": [
@@ -36,7 +27,7 @@ def getquestion():
             ]
         },
         {
-            "id": "1-4",
+            "id": "1-3",
             "text": "최종 학력",
             "type": "radio",
             "options": [
@@ -44,11 +35,18 @@ def getquestion():
             ]
         },
         {
-            "id": "1-5",
+            "id": "1-4",
             "text": "가구 월평균 소득",
-            "type":"",
-            # "type": "radio",
-            "options": [   
+            "type": "radio",
+            "options_row": 3, 
+            "options": [  
+                "100만 원 미만", 
+                "100만 원 이상 ~ 200만 원 미만", "200만 원 이상 ~ 300만 원 미만",
+                "300만 원 이상 ~ 400만 원 미만", "400만 원 이상 ~ 500만 원 미만", 
+                "500만 원 이상 ~ 600만 원 미만", "600만 원 이상 ~ 700만 원 미만", 
+                "700만 원 이상 ~ 800만 원 미만", "800만 원 이상 ~ 900만 원 미만", 
+                "900만 원 이상 ~ 1000만 원 미만", "1000만 원 이상", 
+                "응답 거절 / 모르겠음"
             ]
         },
         {
@@ -63,6 +61,7 @@ def getquestion():
             "options": [
                 "예", "아니오"
             ],
+            "set_qst" : True,
         },
         {
             "id": "2-2",
@@ -72,7 +71,9 @@ def getquestion():
                 "데스크탑 PC(컴퓨터)", "노트북(컴퓨터)", "휴대폰", "태블릿 PC", "프린터", "웹캠", "기타"
             ],
             "has_etc": True,
-            "etc_q":"기타 기기를 입력하세요"
+            "etc_q":"기타 기기를 입력하세요",
+            "folded" : True,
+            "parent": "2-1"
         },
         {
             "id": "2-3",
@@ -82,10 +83,12 @@ def getquestion():
                 "내 방에서", "가족과 함께 쓰는 공용 공간에서(예: 거실)", "카페, PC방 등 집 밖에서", "학교 교실에서", "기타"
             ],
             "has_etc": True,
-            "etc_q":"기타 징소를 입력하세요"
+            "etc_q":"기타 징소를 입력하세요",
+            "folded" : True,
+            "parent": "2-1"
         },
         {
-            "id": "4",
+            "id": "3",
             "text":"지난 학기 또는 최근 몇 차례의 온라인 수업 경험을 기준으로 대답하세요.",
             "type":"none",
         },
@@ -145,6 +148,38 @@ def getquestion():
     ]
     return questions
 
+# CSS 인젝션을 위한 HTML 코드
+# .stRadio의 부모 요소와 padding을 제거하고, 라디오 버튼 레이블의 마진도 조절합니다.
+custom_css = """
+        <style>
+        .stRadio > div {
+            padding-top: 0px !important;
+        }
+        .stRadio > div > label {
+            margin-bottom: 0px !important;
+        }
+        </style>
+    """
+st.markdown(custom_css, unsafe_allow_html=True)
+
+st.markdown("""
+<style>
+    /* 라디오 버튼 그룹 전체에 Flexbox를 적용 */
+    div[data-testid="stRadio"] > label > div {
+        display: flex;
+        flex-wrap: wrap; /* 옵션이 넘치면 다음 줄로 이동 */
+        gap: 1rem; /* 옵션 간의 간격 */
+    }
+
+    /* 각 라디오 버튼의 개별 레이아웃 조정 */
+    div[data-testid="stRadio"] > label > div > label {
+        flex: 1 0 18%; /* 한 줄에 5개씩 표시되도록 너비 설정 */
+        box-sizing: border-box;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+
 def survey():
     # st.set_page_config(initial_sidebar_state="collapsed")
 
@@ -174,6 +209,7 @@ def survey():
     responses = {}
     etc_dict = {}
 
+
     # form 밖에서 문항 UI 렌더링
     for q in questions:
         qid = q["id"]
@@ -181,28 +217,57 @@ def survey():
         qtype = q["type"]
         qtitle = qid + ". " + qtext
         qoptions = q.get("options", [])
+        parent_id = q.get("parent")
         
         option_to_num = {opt: i+1 for i, opt in enumerate(qoptions)}  
+        
+        if parent_id and st.session_state.get(parent_id) != "예":
+            continue
 
         if qtype == "radio":
-            st.markdown(f"<p style='font-size:16px; font-weight:bold;'>{qtitle}</p>", unsafe_allow_html=True)
-            answer = st.radio("", options=qoptions, key=qid, horizontal=True, index=None)
+            st.markdown(f"<p style='font-size:16px; font-weight:bold; margin-bottom: -10rem;'>{qtitle}</p>", unsafe_allow_html=True)
+            answer = st.radio("", 
+            options=qoptions, key=qid, horizontal=True, index=None)
             res = option_to_num.get(answer)
             responses[qid] = res
+                        
+            # qrow = q.get("options_row", None)
+            # if qrow != None:
+            #     cols = st.columns(qrow)
+                
+            #     # 각 열에 옵션들을 나눠서 배치
+            #     for i, option in enumerate(qoptions):
+            #         col_index = i % qrow
+                    
+            #         with cols[col_index]:
+            #             if st.radio("", [option], key=f"radio_{qid}_{i}", index=None) == option:
+            #                 responses[qid] = option_to_num.get(option)
+            # else:
+            #     answer = st.radio("", 
+            #     options=qoptions, key=qid, horizontal=True, index=None)
+            #     res = option_to_num.get(answer)
+            #     responses[qid] = res
 
-            if q.get("has_etc") and answer == "기타":
-                etc_input = st.text_input(q.get("etc_q", "기타 내용을 입력하세요"), key=f"{qid}_etc")
-                etc_dict[qid] = etc_input
+            # if q.get("has_etc") and answer == "기타":
+            #     etc_input = st.text_input(q.get("etc_q", "기타 내용을 입력하세요"), key=f"{qid}_etc")
+            #     etc_dict[qid] = etc_input
+            
+            if qid == "2-1" and st.session_state.get("2-1") == "예":
+                st.markdown(f"<p style='font-size:16px; font-weight:bold;'>하위 질문입니다.</p>", unsafe_allow_html=True)
+            
+            if qid == "2-1" and st.session_state.get("2-1") == "아니오":
+                responses["2-2"] = None
+                responses["2-3"] = None
 
         elif qtype == "selectbox":
-            st.markdown(f"<p style='font-size:16px; font-weight:bold;'>{qtitle}</p>", unsafe_allow_html=True)
+            st.markdown(f"<p style='font-size:16px; font-weight:bold; margin-bottom: -10rem;'>{qtitle}</p>", unsafe_allow_html=True)
             answer = st.selectbox("", options=qoptions, key=qid, index=None)
             res = option_to_num.get(answer)
             responses[qid] = res
 
-            if q.get("has_etc") and selected == "기타":
-                etc_input = st.text_input(q.get("etc_q", "기타 내용을 입력하세요"), key=f"{qid}_etc")
-                etc_dict[qid] = etc_input
+            # if q.get("has_etc") and selected == "기타":
+            #     etc_input = st.text_input(q.get("etc_q", "기타 내용을 입력하세요"), key=f"{qid}_etc")
+            #     etc_dict[qid] = etc_input
 
         elif qtype == "checkbox":
             st.write(f"**{qtitle}**")
@@ -213,76 +278,89 @@ def survey():
                 key = f"{qid}_{i}"
                 if cols[i % 3].checkbox(option, key=key):
                     res = option_to_num.get(option)
-                    selected.append(res)
+                    selected.append(res) 
             responses[qid] = selected
 
-            # '기타' 선택 시 텍스트 입력창 노출
-            if q.get("has_etc") and st.session_state.get(f"{qid}_{qoptions.index('기타')}", False):
-                etc_input = st.text_input(q.get("etc_q", "기타 내용을 입력하세요"), key=f"{qid}_etc")
-                etc_dict[qid] = etc_input
+            # # '기타' 선택 시 텍스트 입력창 노출
+            # if q.get("has_etc") and st.session_state.get(f"{qid}_{qoptions.index('기타')}", False):
+            #     etc_input = st.text_input(q.get("etc_q", "기타 내용을 입력하세요"), key=f"{qid}_etc")
+            #     etc_dict[qid] = etc_input
 
         elif qtype == "text":
             text_input = st.text_input(f"**{qtitle}**", key=qid)
             responses[qid] = text_input
 
         elif qtype == "none":
-            st.divider()
+            if int(qid) > 1:
+                st.divider()
             st.markdown(f"<p style='font-size:22px; font-weight:bold;'>{qtitle}</p>", unsafe_allow_html=True)
             
         else:
-            continue
+            continue    
+     
+    
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        button_container = st.container()
+    
+        with button_container:
+            if st.button("뒤로 가기"):
+                move_to('main')
 
-
-    # 제출 버튼만 form으로 묶기 (submit 용)
-    with st.form("submit_form"):
-        submitted = st.form_submit_button("제출")
-
-    if submitted:  
-        
-        # 데이터 검증
-        is_valid = True
-        error_message = ""
-        for q in questions:
-            qid = q["id"]
-            qtext = q["text"]
-            qtype = q["type"]
-
-            if qtype == "radio" or qtype == "selectbox":
-                if responses.get(qid) is None:
-                    is_valid = False
-                    error_message = f"🚨 '{qtext}' 문항을 선택해주세요."
-                    break
-            elif qtype == "checkbox":
-                if not responses.get(qid): # 선택된 항목이 없으면
-                    is_valid = False
-                    error_message = f"🚨 '{qtext}' 문항을 하나 이상 선택해주세요."
-                    break
-            elif qtype == "text":
-                if not responses.get(qid): # 입력된 텍스트가 없으면
-                    is_valid = False
-                    error_message = f"🚨 '{qtext}' 문항에 내용을 입력해주세요."
-                    break
-        
-            # '기타' 항목의 텍스트 입력 검사
-            if q.get("has_etc") and qid in etc_dict and not etc_dict[qid]:
-                is_valid = False
-                error_message = f"🚨 '{qtext}' 문항의 기타 내용을 입력해주세요."
-                break
-        
-        if is_valid:
-            final_responses = responses.copy()
-            # etc_dict를 JSON 문자열로 변환
-            final_responses["etc_text"] = json.dumps(etc_dict, ensure_ascii=False)
-            st.session_state['form_data'] = final_responses
+            if st.button("최종 제출"):
+                
+                # 데이터 검증
+                is_valid = True
+                error_message = ""
+                        
+                for q in questions:
+                    qid = q["id"]
+                    qtext = q["text"]
+                    qtype = q["type"]          
+                    parent_id = q.get("parent")
             
-            # 데이터 확인용
-            st.write("설문 응답 결과:")
-            st.json(final_responses)
-            
-            # 페이지 이동
-            move_to('survey_result')
-        else:
-            st.error(error_message)
+                    
+                    if parent_id and st.session_state.get(parent_id) != "예":
+                        continue
+                        
+                    if qtype == "radio" or qtype == "selectbox":
+                        if responses.get(qid) is None:
+                            is_valid = False
+                            error_message = f"🚨 '{qtext}' 문항을 선택해주세요."
+                            break
+                    elif qtype == "checkbox":
+                        if not responses.get(qid): # 선택된 항목이 없으면
+                            is_valid = False
+                            error_message = f"🚨 '{qtext}' 문항을 하나 이상 선택해주세요."
+                            break
+                    elif qtype == "text":
+                        if not responses.get(qid): # 입력된 텍스트가 없으면
+                            is_valid = False
+                            error_message = f"🚨 '{qtext}' 문항에 내용을 입력해주세요."
+                            break
+                
+                    # '기타' 항목의 텍스트 입력 검사
+                    if q.get("has_etc") and qid in etc_dict and not etc_dict[qid]:
+                        is_valid = False
+                        error_message = f"🚨 '{qtext}' 문항의 기타 내용을 입력해주세요."
+                        break
+                
+                if is_valid:
+                    final_responses = responses.copy()
+                    # etc_dict를 JSON 문자열로 변환
+                    # final_responses["etc_text"] = json.dumps(etc_dict, ensure_ascii=False)
+                    st.session_state['form_data'] = final_responses
+                    
+                    # # 데이터 확인용
+                    # st.write("설문 응답 결과:")
+                    # print(f"결과:{final_responses}")
+                    # st.json(final_responses)
+                    
+                    # 페이지 이동
+                    move_to('survey_result')
+                    # st.switch_page("pages/survey_result.py")
+                else:
+                    st.error(error_message)
         
 
 if __name__ == "__main__":

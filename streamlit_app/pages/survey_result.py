@@ -1,8 +1,8 @@
 import streamlit as st
-from services import data_handlr as handlr
+from services import data_handlr as hdlr
 from common import move_to
 
-def survey():
+def finish():
     st.set_page_config(
         page_title="결과",
         page_icon="🎉",
@@ -15,8 +15,7 @@ def survey():
     # 페이지 레이아웃 조정 (센터링 효과)
     st.markdown('<style>div.block-container{padding-top:2rem;}</style>', unsafe_allow_html=True)
 
-    # # 제목 (좌측 정렬)
-    # st.markdown('<h3 style="font-weight:bold; margin-bottom:0.5em;">만족도조사</h3>', unsafe_allow_html=True)
+    # # 제목/arkdown('<h3 style="font-weight:bold; margin-bottom:0.5em;">만족도조사</h3>', unsafe_allow_html=True)
 
     # 가운데 내용
     st.markdown('<br>', unsafe_allow_html=True)
@@ -51,7 +50,7 @@ def survey():
         form_data = st.session_state.form_data
         
         # 데이터 처리
-        handlr.save(form_data)
+        hdlr.save(form_data)
         st.subheader("데이터 처리 결과")
         st.success("데이터가 저장되었습니다.")
         
@@ -65,6 +64,17 @@ def survey():
         st.warning("제출된 데이터가 없습니다. 설문조사 페이지로 이동하여 다시 시작해주세요.")
         if st.button("설문조사 페이지로 돌아가기"):
             move_to('main')
+            
+    # 페이지 최상단으로 스크롤
+    js_code = """
+    <script>
+        window.onload = function() {
+            window.scrollTo(0, 0);
+        };
+    </script>
+    """
+    st.components.v1.html(js_code, height=0, width=0) # HTML 컴포넌트를 사용해 페이지에 JS 코드 삽입
+
 
 if __name__ == "__main__":
-    survey()
+    finish()
