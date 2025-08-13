@@ -38,4 +38,4 @@ if page == 'main':
 elif page == 'survey_form':
     survey_form.survey()
 elif page == 'survey_result':
-    survey_result.survey()
+    survey_result.finish()

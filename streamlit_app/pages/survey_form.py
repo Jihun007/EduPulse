@@ -301,13 +301,14 @@ def survey():
     
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        button_container = st.container()
-    
-        with button_container:
-            if st.button("뒤로 가기"):
-                move_to('main')
+        sub_col1, sub_col2 = st.columns(2)
 
-            if st.button("최종 제출"):
+        with sub_col1:
+            if st.button("뒤로 가기", use_container_width=True):
+                move_to('main')
+                
+        with sub_col2:
+            if st.button("최종 제출", use_container_width=True):
                 
                 # 데이터 검증
                 is_valid = True

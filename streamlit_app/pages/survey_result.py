@@ -1,6 +1,6 @@
 import streamlit as st
 from services import data_handlr as hdlr
-from common import move_to
+from common import move_to, scroll_to_top
 
 def finish():
     st.set_page_config(
@@ -12,20 +12,33 @@ def finish():
     st.write()
     st.write()
     st.write()
+    
     # 페이지 레이아웃 조정 (센터링 효과)
     st.markdown('<style>div.block-container{padding-top:2rem;}</style>', unsafe_allow_html=True)
 
-    # # 제목/arkdown('<h3 style="font-weight:bold; margin-bottom:0.5em;">만족도조사</h3>', unsafe_allow_html=True)
+    # # # 제목 (좌측 정렬)
+    # st.markdown('<h3 style="font-weight:bold; margin-bottom:0.5em;">만족도조사</h3>', unsafe_allow_html=True)
 
     # 가운데 내용
     st.markdown('<br>', unsafe_allow_html=True)
     st.markdown(
-        "<h2 style='text-align:center; font-weight:bold;'>만족도 조사가 완료되었습니다.</h2>",
+        "<h2 style='text-align:center; font-weight:bold;'>만족도 조사가 완료되었습니다.</h2><br/>",
         unsafe_allow_html=True
     )
 
+
+    import os
+    # 이미지 경로를 계산합니다.
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    image_path = os.path.join(current_dir, '..', '..', 'image', 'handshake.png')
+
+
+    col1, col2, col3 = st.columns([1, 1, 1]) # [왼쪽 여백, 이미지 영역, 오른쪽 여백] 비율 조정 가능
+    with col2:
+        st.image(image_path, width=250, use_container_width=True) # use_container_width로 가운데 컬럼에 맞춤
+
     # 아이콘/이미지 (로컬 이미지 파일일 경우 경로와 파일명에 맞게 변경)
-    # st.image("handshake.png", width=220, use_column_width=False, output_format="auto", caption=None)  # 예) ./handshake.png
+    # st.image("handshake.png", width=220)  # 예) ./handshake.png
 
     # 안내 문구
     st.markdown(
@@ -44,36 +57,28 @@ def finish():
     with col2:
         if st.button("메인으로", use_container_width=True):
             move_to('main') #통계화면으로 이동하도록 수정 필요
-
-    # st.session_state에서 form.py에서 저장한 데이터를 가져옵니다.
-    if 'form_data' in st.session_state:
-        form_data = st.session_state.form_data
-        
-        # 데이터 처리
-        hdlr.save(form_data)
-        st.subheader("데이터 처리 결과")
-        st.success("데이터가 저장되었습니다.")
-        
-        # 데이터 확인용
-        st.json(form_data)
-        
-        # 세션 상태에서 폼 데이터를 삭제하여 새로고침 시 데이터가 남아있지 않도록 합니다.
-        del st.session_state['form_data']
-        
-    else:
-        st.warning("제출된 데이터가 없습니다. 설문조사 페이지로 이동하여 다시 시작해주세요.")
-        if st.button("설문조사 페이지로 돌아가기"):
-            move_to('main')
             
-    # 페이지 최상단으로 스크롤
-    js_code = """
-    <script>
-        window.onload = function() {
-            window.scrollTo(0, 0);
-        };
-    </script>
-    """
-    st.components.v1.html(js_code, height=0, width=0) # HTML 컴포넌트를 사용해 페이지에 JS 코드 삽입
+    scroll_to_top() # 안됨
+
+    # # st.session_state에서 form.py에서 저장한 데이터를 가져옵니다.
+    # if 'form_data' in st.session_state:
+    #     form_data = st.session_state.form_data
+        
+    #     # 데이터 처리
+    #     hdlr.save(form_data)
+    #     # st.subheader("데이터 처리 결과")
+    #     # st.success("데이터가 저장되었습니다.")
+        
+    #     # 데이터 확인용
+    #     # st.json(form_data)
+        
+    #     # 세션 상태에서 폼 데이터를 삭제하여 새로고침 시 데이터가 남아있지 않도록 합니다.
+    #     del st.session_state['form_data']
+        
+    # # else:
+    # #     st.warning("제출된 데이터가 없습니다. 설문조사 페이지로 이동하여 다시 시작해주세요.")
+    # #     if st.button("설문조사 페이지로 돌아가기"):
+    # #         move_to('main')
 
 
 if __name__ == "__main__":
