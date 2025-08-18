@@ -61,24 +61,22 @@ def finish():
     scroll_to_top() # 안됨
 
     # # st.session_state에서 form.py에서 저장한 데이터를 가져옵니다.
-    # if 'form_data' in st.session_state:
-    #     form_data = st.session_state.form_data
+    if 'form_data' in st.session_state:
+        form_data = st.session_state.form_data
         
-    #     # 데이터 처리
-    #     hdlr.save(form_data)
-    #     # st.subheader("데이터 처리 결과")
-    #     # st.success("데이터가 저장되었습니다.")
+        # 데이터 처리
+        hdlr.save(form_data)
+        # st.subheader("데이터 처리 결과")
+        # st.success("데이터가 저장되었습니다.")
         
-    #     # 데이터 확인용
-    #     # st.json(form_data)
+        # 데이터 확인용
+        # st.json(form_data)
         
-    #     # 세션 상태에서 폼 데이터를 삭제하여 새로고침 시 데이터가 남아있지 않도록 합니다.
-    #     del st.session_state['form_data']
-        
-    # # else:
-    # #     st.warning("제출된 데이터가 없습니다. 설문조사 페이지로 이동하여 다시 시작해주세요.")
-    # #     if st.button("설문조사 페이지로 돌아가기"):
-    # #         move_to('main')
+        del st.session_state['form_data']
+    else:
+        st.warning("제출된 데이터가 없습니다. 설문조사 페이지로 이동하여 다시 시작해주세요.")
+        if st.button("설문조사 페이지로 돌아가기"):
+            move_to('main')
 
 
 if __name__ == "__main__":
