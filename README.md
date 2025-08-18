@@ -65,7 +65,7 @@ EduPulse/
 # 실행 방법
 
 이 프로젝트는 **Python + Jupyter + Pandas + Matplotlib** 기반입니다.
-- 간편 실행만 원하는 경우, `README.env.md`를 참고하세요.
+#### 간편 실행만 원하는 경우, `README.env.md`를 참고하세요.
 
 1. Visual Studio Code 설치 (1.101.2)
 - https://code.visualstudio.com/
