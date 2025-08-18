@@ -96,6 +96,7 @@ python -m pip install -r requirements.txt
 6. Jupyter Notebook 사용 (데이터 탐색/분석 단계)
 ```
 pip install jupyter
+cd notebooks/
 jupyter notebook
 ```
 7. Streamlit 대시보드 실행 (결과 시각화)
