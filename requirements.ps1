@@ -54,7 +54,7 @@ if (-not (Get-Command -Name "sqlite3" -ErrorAction SilentlyContinue)) {
 }
 
 $ddlFilePath = ".\db\EduPulse_ddl.sql"
-$dbFilePath = ".\db\edupulse.db"
+$dbFilePath = ".\db\Edupulse.db"
 
 sqlite3.exe를 실행하여 DDL 파일 읽기 및 DB 생성
 sqlite3 $dbFilePath ".read '$ddlFilePath'"
