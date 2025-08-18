@@ -33,3 +33,7 @@ def assets_get_img(img_name):
 # 현재 파일 기준으로 csv 절대 경로 생성   
 def data_get_csv(csv_name):
     return Path(__file__).parent.parent / 'data/processed' / csv_name
+
+# 현재 파일 기준으로 만족도조사 csv 절대 경로 생성
+def data_get_surCsv(csv_name):
+    return Path(__file__).parent.parent / 'data/survey/raw' / csv_name

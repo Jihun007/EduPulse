@@ -2,7 +2,8 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import pandas as pd
 import platform
-from common import move_to, assets_get_img, data_get_csv
+import numpy as np
+from common import move_to, assets_get_img, data_get_csv, data_get_surCsv
 
 if platform.system() == 'Windows':
     plt.rcParams['font.family'] = 'Malgun Gothic'
@@ -28,11 +29,21 @@ def get_csv():
     csv_file = pd.read_excel(file_path, engine='openpyxl')
     return csv_file
 
+@st.cache_data
+# 만족도조사csv 읽어오기
+def get_surCsv():
+    file_path = data_get_surCsv('2024_만족도조사.csv')
+    csv_file = pd.read_csv(file_path, encoding='utf-8-sig')
+    return csv_file
+
 # 대시보드 실행
 def run():
     
     # 1. csv 파일 불러오기
     csv_file = get_csv()
+    
+    # 1. 만족도조사csv 파일 불러오기
+    surCsv_file = get_surCsv()
     
     title1, title2 = st.columns([6, 1])
 
@@ -240,6 +251,7 @@ def run():
             #ax.set_title('학력별 디지털 기기 보유 여부 (%)')
             #ax.set_xlabel('비율 (%)')
             #ax.set_ylabel('학력 수준')
+            ax.set_ylabel("")
             ax.set_xlim(0, 100)
             ax.legend(title='보유 여부', loc='upper left')
             plt.tight_layout()
@@ -322,31 +334,166 @@ def run():
     #만족도조사
     st.markdown('#### 만족도조사')
     st.text('EduPulse에서 실행한 만족도조사 결과가 반영되어 있습니다.')
-    # 임시 사각형 공간
-    st.markdown(
-        """
-        <div style="
-            border: 1px dashed gray;
-            height: 300px;
-            width: 100%;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: gray;
-            font-style: italic;
-        ">
-            (여기에 그래프가 표시될 예정입니다)
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    
+    # 각 차트 2구역 나누기
+    chart1, chart2 = st.columns(2)
+    
+    with chart1:
+        if surCsv_file is not None:
+            # 2. 데이터 불러오기 및 전처리
+            df = surCsv_file
+            
+            # -------------------------
+            # 2) Q6 다중선택 파싱
+            # -------------------------
+            def parse_multi(x):
+                if pd.isna(x):
+                    return []
+                s = str(x).replace(';', ',')
+                parts = [p.strip() for p in s.split(',') if p.strip() != '']
+                out = []
+                for p in parts:
+                    try:
+                        out.append(int(p))
+                    except ValueError:
+                        pass
+                return out
+
+            codes_series = df['Q6'].apply(parse_multi).explode().dropna()
+            codes_series = codes_series.astype(int)
+
+            # -------------------------
+            # 3) 코드 → 라벨 매핑
+            # -------------------------
+            device_map = {
+                1: '데스크탑 PC',
+                2: '노트북',
+                3: '휴대폰',
+                4: '태블릿 PC',
+                5: '프린터',
+                6: '웹캠',
+                7: '기타'
+            }
+            names = codes_series.map(device_map)
+
+            # -------------------------
+            # 4) 집계: 빈도 & 선택률
+            # -------------------------
+            counts = names.value_counts()
+            n_valid = (df['Q6'].apply(lambda x: len(parse_multi(x)) > 0)).sum()
+            rates = (counts / n_valid * 100).round(1) if n_valid > 0 else counts*0
+
+            # TOP-N 선택
+            TOP_N = min(6, len(rates))
+            rates_top = rates.head(TOP_N).sort_values(ascending=True)
+
+            # -------------------------
+            # 5) 결과 테이블 출력
+            # -------------------------
+            result_df = pd.DataFrame({
+                "기기": rates.index,
+                "선택률(%)": rates.values
+            })
+            # st.subheader("📋 기기별 선택률")
+            # st.dataframe(result_df)
+
+            # -------------------------
+            # 6) 시각화 (수평 막대 - %기준)
+            # -------------------------
+            fig, ax = plt.subplots(figsize=(8, 5))
+            bars = ax.barh(rates_top.index, rates_top.values, color='#66b3ff')
+
+            # 라벨 추가 (%만 출력)
+            for bar, r in zip(bars, rates_top.values):
+                ax.text(bar.get_width() + max(rates_top.max()*0.02, 0.5),
+                        bar.get_y() + bar.get_height()/2,
+                        f'{r}%', va='center', ha='left', fontsize=10)
+
+            ax.set_title(f'원격수업에 이용 가능한 기기보유율(%)')
+            # ax.set_xlabel('선택률(%)')
+            # ax.set_ylabel('기기')
+
+            st.pyplot(fig)
+            
+    with chart2:
+        if surCsv_file is not None:
+            # 2. 데이터 불러오기 및 전처리
+            df = surCsv_file
+            
+            # -------------------------
+            # Q8~Q13 문항 선택
+            # -------------------------
+            likert_cols = ['Q8', 'Q9', 'Q10', 'Q11', 'Q12', 'Q13']
+            question_labels = {
+                'Q8': '새 지식 습득',
+                'Q9': '문제 해결 능력 향상',
+                'Q10': '수업 목표 달성',
+                'Q11': '전반적 만족도',
+                'Q12': '기대 이상 경험',
+                'Q13': '향후 동일 방식 선택'
+            }
+
+            # -------------------------
+            # 비율 및 개수 계산
+            # -------------------------
+            plot_data = pd.DataFrame(index=likert_cols, columns=['부정', '중립', '긍정'], dtype=float)
+            count_data = pd.DataFrame(index=likert_cols, columns=['부정', '중립', '긍정'], dtype=int)
+
+            for col in likert_cols:
+                counts = df[col].value_counts(normalize=False)
+                counts_pct = df[col].value_counts(normalize=True) * 100
+                
+                neg_count = counts.get(1, 0) + counts.get(2, 0)
+                neu_count = counts.get(3, 0)
+                pos_count = counts.get(4, 0) + counts.get(5, 0)
+
+                neg_pct = counts_pct.get(1, 0) + counts_pct.get(2, 0)
+                neu_pct = counts_pct.get(3, 0)
+                pos_pct = counts_pct.get(4, 0) + counts_pct.get(5, 0)
+                
+                plot_data.loc[col] = [neg_pct, neu_pct, pos_pct]
+                count_data.loc[col] = [neg_count, neu_count, pos_count]
+
+            # -------------------------
+            # 시각화 (Streamlit용)
+            # -------------------------
+            fig, ax = plt.subplots(figsize=(8, 6))
+            y_pos = np.arange(len(plot_data))
+
+            neg_bar = ax.barh(y_pos, plot_data['부정'], color='#d73027', label='부정', align='center')
+            neu_bar = ax.barh(y_pos, plot_data['중립'], left=plot_data['부정'], color='#fdae61', label='중립', align='center')
+            pos_bar = ax.barh(y_pos, plot_data['긍정'], left=plot_data['부정'] + plot_data['중립'],
+                            color='#1a9850', label='긍정', align='center')
+
+            # 퍼센트 + 개수 라벨 추가
+            for bars, category in zip([neg_bar, neu_bar, pos_bar], ['부정', '중립', '긍정']):
+                for i, bar in enumerate(bars):
+                    width = bar.get_width()
+                    count = count_data.iloc[i][category]
+                    if width > 0:
+                        ax.text(bar.get_x() + width / 2, 
+                                bar.get_y() + bar.get_height()/2,
+                                f'{width:.1f}%',
+                                # f'{width:.1f}%\n({count}명)',
+                                ha='center', va='center', color='black', fontsize=9)
+
+            ax.set_yticks(y_pos)
+            ax.set_yticklabels([question_labels[q] for q in plot_data.index])
+            # ax.set_xlabel('응답 비율 (%)')
+            ax.set_title('리커트 문항별 응답 비율 비교 (Q8~Q13)')
+            ax.legend(loc='lower right')
+
+            plt.tight_layout()
+            st.pyplot(fig)
+            
+            
 
     # 줄바꿈
     st.markdown("<br />", unsafe_allow_html=True)
 
     # 버튼 가운데
     survey1, survey2, survey3 = st.columns([2, 1, 2])
+    
     with survey2:
         # 만족도조사 참여하기 버튼
         if st.button('만족도조사 참여하기', key='surveyBtn2'):
