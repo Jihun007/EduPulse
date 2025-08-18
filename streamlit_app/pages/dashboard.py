@@ -29,7 +29,6 @@ def get_csv():
     csv_file = pd.read_excel(file_path, engine='openpyxl')
     return csv_file
 
-@st.cache_data
 # 만족도조사csv 읽어오기
 def get_surCsv():
     file_path = data_get_surCsv('2024_만족도조사.csv')
