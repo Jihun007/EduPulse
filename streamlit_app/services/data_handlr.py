@@ -1,18 +1,20 @@
 import os
+import sys
 import sqlite3 as sql
 from datetime import datetime
+from .db_to_csv import export
 
-# db - survey.db 경로 설정
+# db - edupulse.db 경로 설정
 # 현재 스크립트 파일의 절대 경로
-current_script_path = os.path.abspath(__file__)
+CURRENT_SCRIPT_PATH = os.path.abspath(__file__)
 # 현재 스크립트의 디렉토리(services)
-current_dir = os.path.dirname(current_script_path)
+CURRENT_DIR = os.path.dirname(CURRENT_SCRIPT_PATH)
 # 2단계 상위 디렉토리(streamlit_app)
-parent_dir_upper = os.path.dirname(current_dir)
-# 상위 디렉토리(Edupurse) -  '..'는 상위 디렉토리를 의미
-parent_dir = os.path.dirname(parent_dir_upper)
+PARENT_DIR = os.path.dirname(CURRENT_DIR)
+# 상위 디렉토리(Edupulse) -  '..'는 상위 디렉토리를 의미
+PROJECT_ROOT = os.path.dirname(PARENT_DIR)
 # 상위 디렉토리에서 ''data' 폴더로 이동. db 파일 경로 설정
-DB_PATH = os.path.join(parent_dir, 'db', 'survey.db')
+DB_PATH = os.path.join(PROJECT_ROOT, 'db', 'edupulse.db')
 
 def connect_db():
     return sql.connect(DB_PATH)
@@ -77,8 +79,37 @@ def save(data_list):
         if conn:
             conn.rollback()
             return False
+    else:
+        # try 블록이 에러 없이 성공적으로 완료되면 이 블록 실행
+        print("데이터 삽입 성공!")
+        
+        try: 
+            DATABASE_FILE = 'edupulse.db'     # SQLite DB 파일명
+            DATABASE_PATH = os.path.join(PROJECT_ROOT,'db', DATABASE_FILE)
+            TABLE_NAME = 'DGSTFN'            # CSV로 내보낼 테이블명
+            OUTPUT_CSV_FILE = TABLE_NAME + '.csv' # 생성될 CSV 파일명
+            OUTPUT_FOLDER = 'data\survey'
+            
+            
+            sys.path.append(PROJECT_ROOT)  
+            output_full_path = os.path.join(PROJECT_ROOT, OUTPUT_FOLDER, OUTPUT_CSV_FILE)
+            # 폴더가 없으면 생성
+            os.makedirs(os.path.dirname(output_full_path), exist_ok=True)
+            
+            print(f"-------PROJECT_ROOT!!{PROJECT_ROOT}")
+            print(f"-------output_full_path!!{output_full_path}")
+            print(f"-------DATABASE_PATH!!{DATABASE_PATH}")
+
+            export(DATABASE_PATH, TABLE_NAME, output_full_path)
+        except Exception as e:
+            print(f"오류가 발생했습니다: {e}")
+        else:
+            print("CSV 파일 내보내기 성공!")
+                    
     finally:
         if conn:
             conn.close()
+        
+       
 
 
