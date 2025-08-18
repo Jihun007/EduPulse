@@ -90,8 +90,8 @@ source venv/Scripts/activate         # Windows
 ```
 5. 필수 패키지 설치
 ```
-pip install --upgrade pip
-pip install -r requirements.txt
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
 ```
 6. Jupyter Notebook 사용 (데이터 탐색/분석 단계)
 ```
