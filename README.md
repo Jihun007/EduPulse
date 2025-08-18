@@ -39,27 +39,27 @@
 # 프로젝트 구조
 ```
 EduPulse/
-├── data/                        # 원본 데이터 및 가공 데이터
-│   ├── raw/                        # 수집된 원본 CSV, API 결과 등
-│   └── processed/                  # 전처리 완료된 CSV 또는 파생 데이터
+├── data/                           # 원본 데이터 및 가공 데이터
+│   ├── raw/                        # 수집된 원본 CSV
+│   ├── processed/                  # 전처리 완료된 CSV 또는 파생 데이터
+│   └── survey/                     # 만족도조사 데이터
+│       └── raw/                    # csv
 │
-├── notebooks/                  # EDA 및 모델링 노트북
+├── notebooks/                      # EDA 및 모델링 노트북
 │
-├── streamlit_app/              # Streamlit 기반 대시보드 및 설문 시스템
+├── streamlit_app/                  # Streamlit 기반 대시보드 및 설문 시스템
 │
-├── scripts/                    # 데이터 수집/정제/시각화 파이썬 스크립트
+├── assets/                         # 이미지 파일
 │
-├── reports/                    # 중간보고서, 발표자료, 회의록 등
-│
-├── assets/                     # 이미지, 아이콘, 폰트 등 정적 파일
-│
-├── db/                         # SQLite 파일 위치
+├── db/                             # SQLite 파일 위치
 │
 ├── requirements.txt                # 의존성 라이브러리 명시
-├── README.md                       # 프로젝트 설명 및 실행 방법
+├── requirements.ps1                # 자동 가상환경 생성 및 패키지 설치
+├── README.env.md                   # 프로젝트 설치 및 실행 방법 (간편 실행)
+├── README.md                       # 프로젝트 설명 및 실행 방법 (코드 분석)
 └── .gitignore                      # Git 제외 파일 설정
 ```
-# 실행 방법 (추후 추가)
+# 실행 방법
 
 이 프로젝트는 **Python + Jupyter + Pandas + Matplotlib** 기반입니다.
 
