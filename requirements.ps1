@@ -1,5 +1,8 @@
 # requirements.ps1
 
+# 인코딩 변경
+$OutputEncoding = [System.Text.Encoding]::UTF8
+
 # 1) Python 설치 및 버전 체크
 $pythonVersion = python --version 2>&1
 if ($LASTEXITCODE -ne 0) {
@@ -34,5 +37,8 @@ python -m pip install --upgrade pip
 pip install streamlit==1.47.0
 pip install jupyter==7.3.2
 pip install sqlite-bro==0.14.1
+pip install matplotlib==3.10.0
+pip install openpyxl==3.0.9
 
+Write-Host ""
 Write-Host "가상환경 설정 및 패키지 설치가 완료되었습니다." -ForegroundColor Green

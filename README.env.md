@@ -16,8 +16,7 @@ cd eduPulse
 ### 2. Windows 환경: 자동 가상환경 생성 및 패키지 설치 (권장)
  - Windows PowerShell에서 실행하세요:
 ```powershell
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-.\requirements.ps1
+powershell.exe -ExecutionPolicy Bypass -File ".\requirements.ps1"
 ```
 
 ### 3. macOS / Linux 환경: 수동 설치
