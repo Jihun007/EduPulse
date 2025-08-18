@@ -1,0 +1,115 @@
+import os
+import sys
+import sqlite3 as sql
+from datetime import datetime
+from .db_to_csv import export
+
+# db - edupulse.db 경로 설정
+# 현재 스크립트 파일의 절대 경로
+CURRENT_SCRIPT_PATH = os.path.abspath(__file__)
+# 현재 스크립트의 디렉토리(services)
+CURRENT_DIR = os.path.dirname(CURRENT_SCRIPT_PATH)
+# 2단계 상위 디렉토리(streamlit_app)
+PARENT_DIR = os.path.dirname(CURRENT_DIR)
+# 상위 디렉토리(Edupulse) -  '..'는 상위 디렉토리를 의미
+PROJECT_ROOT = os.path.dirname(PARENT_DIR)
+# 상위 디렉토리에서 ''data' 폴더로 이동. db 파일 경로 설정
+DB_PATH = os.path.join(PROJECT_ROOT, 'db', 'edupulse.db')
+
+def connect_db():
+    return sql.connect(DB_PATH)
+
+def save(data_list):
+    
+    print(f"data:{data_list}")
+  
+    insert_query = f"""
+            INSERT INTO DGSTFN (RSPDNT_DATE, 
+                                Q1, Q2, Q3, Q4, Q5, 
+                                Q6, Q7, Q8, Q9, Q10,
+                                Q11, Q12, Q13) 
+            VALUES (?, 
+                    ?, ?, ?, ?, ?,
+                    ?, ?, ?, ?, ?, 
+                    ?, ?, ?)
+        """
+        
+    # columns = list(data_list.keys())
+    # placeholders = ', '.join(['?'] * len(columns))
+    # insert_query = f"INSERT INTO SurveyResponses ({', '.join(columns)}) VALUES ({placeholders});"
+    
+    processed_values = []
+    for value in data_list.values():
+        if isinstance(value, list):
+            # 리스트일 경우, 리스트 내부의 각 항목을 processed_values에 추가
+           processed_values.append(", ".join(map(str, value)))
+        else:
+            # 리스트가 아닐 경우, 원래 값을 그대로 추가
+            processed_values.append(value)
+            
+    
+    current_date = datetime.now().strftime('%Y-%m-%d')
+    processed_values.insert(0, current_date)
+
+    values_tuple = tuple(processed_values)
+   
+    print(f"원본 딕셔너리: {data_list}")
+    print(f"처리된 튜플: {values_tuple}")
+  
+    try:
+        
+        conn = connect_db()
+        cur = conn.cursor()   
+        
+        cur.execute(insert_query, values_tuple) 
+        
+        conn.commit()
+        print(f"총 {len(data_list)}개의 데이터가 성공적으로 삽입되었습니다.")
+        
+    except sql.IntegrityError as e: # 중복된 키 등 무결성 제약 조건 위반 시
+        print(f"무결성 오류가 발생했습니다 (Primary Key 중복 등): {e}")
+        if conn:
+            conn.rollback()
+    except sql.Error as e: # SQLITE3에서 발생하는 모든 에러 (예: 테이블/컬럼명이 잘못되었거나, VALUES 수가 맞지 않을 때)
+        print(f"SQLITE3 오류가 발생했습니다: {e}")
+        if conn:
+            conn.rollback()
+    except Exception as e: # 위 두 가지 외에 발생하는 모든 예상치 못한 에러
+        print(f"예상치 못한 오류가 발생했습니다: {e}")
+        if conn:
+            conn.rollback()
+            return False
+    else:
+        # try 블록이 에러 없이 성공적으로 완료되면 이 블록 실행
+        print("데이터 삽입 성공!")
+        
+        try: 
+            DATABASE_FILE = 'edupulse.db'     # SQLite DB 파일명
+            DATABASE_PATH = os.path.join(PROJECT_ROOT,'db', DATABASE_FILE)
+            TABLE_NAME = 'DGSTFN'            # CSV로 내보낼 테이블명
+            OUTPUT_CSV_FILE = TABLE_NAME + '.csv' # 생성될 CSV 파일명
+            OUTPUT_FOLDER = 'data\survey'
+            
+            
+            sys.path.append(PROJECT_ROOT)  
+            output_full_path = os.path.join(PROJECT_ROOT, OUTPUT_FOLDER, OUTPUT_CSV_FILE)
+            # 폴더가 없으면 생성
+            os.makedirs(os.path.dirname(output_full_path), exist_ok=True)
+            
+            print(f"-------PROJECT_ROOT!!{PROJECT_ROOT}")
+            print(f"-------output_full_path!!{output_full_path}")
+            print(f"-------DATABASE_PATH!!{DATABASE_PATH}")
+
+            export(DATABASE_PATH, TABLE_NAME, output_full_path)
+        except Exception as e:
+            print(f"오류가 발생했습니다: {e}")
+        else:
+            print("CSV 파일 내보내기 성공!")
+                    
+    finally:
+        if conn:
+            conn.close()
+        
+       
+
+
