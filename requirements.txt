@@ -5,3 +5,5 @@ streamlit==1.47.0
 pandas==2.2.3
 #커스텀 시각화(복잡한 차트)를 화면에 표시
 matplotlib==3.10.0
+#파이썬 엑셀 작업
+openpyxl==3.0.9
