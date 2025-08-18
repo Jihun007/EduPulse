@@ -95,7 +95,8 @@ streamlit run ....py
 
 ### 간편 실행만 원하는 경우, README.env.md를 참고하세요.
 
-# 주요 화면 예시 (추후 추가)
+# 주요 화면 예시
+![image](./assets/screen.gif)
 
 # License
 본 프로젝트는 MIT License 하에 공개됩니다. 자세한 내용은 `LICENSE` 파일을 참고해주세요.
