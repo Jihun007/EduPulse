@@ -210,8 +210,5 @@ __marimo__/
 *.pyc
 __pycache__/
 
-#Database
-db/*.db
-
 #Environment variables
 .env
