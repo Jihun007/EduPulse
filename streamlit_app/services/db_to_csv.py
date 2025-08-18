@@ -52,23 +52,3 @@ def export(db_path, table_name, output_csv_path):
         if conn:
             conn.close()
 
-# --- 사용 예시 ---
-if __name__ == "__main__":
-    
-    """
-        db_path (str): SQLite 데이터베이스 파일의 경로. 예: 'mydatabase.db'
-        table_name (str): CSV로 내보낼 테이블의 이름. 예: 'users'
-        output_csv_path (str): 생성될 CSV 파일의 경로. 예: 'users_data.csv'
-    """
-    
-    DATABASE_FILE = 'survey.db'     # SQLite DB 파일명
-    TABLE_NAME = 'DGSTFN'            # CSV로 내보낼 테이블명
-    OUTPUT_CSV_FILE = TABLE_NAME + '.csv' # 생성될 CSV 파일명
-    OUTPUT_FOLDER = 'data\survey'
-        
-    sys.path.append(PROJECT_ROOT)  
-    output_full_path = os.path.join(PROJECT_ROOT, OUTPUT_FOLDER, OUTPUT_CSV_FILE)
-    # 폴더가 없으면 생성
-    os.makedirs(os.path.dirname(output_full_path), exist_ok=True)
-
-    export(DATABASE_FILE, TABLE_NAME, output_full_path)
