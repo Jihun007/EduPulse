@@ -26,7 +26,10 @@
 - anaconda 25.5.1
 
 ## <주요 라이브러리>
-- panas
+- pandas 2.2.3
+- matplotlib 3.10.0
+- numpy 2.2.6
+- openpyxl 3.0.9
 
 ## <데이터베이스>
 - SQLite 0.14.1
@@ -62,40 +65,47 @@ EduPulse/
 # 실행 방법
 
 이 프로젝트는 **Python + Jupyter + Pandas + Matplotlib** 기반입니다.
+#### 간편 실행만 원하는 경우, `README.env.md`를 참고하세요.
 
-1. Python 설치
-- Python 3.9 이상 권장 (3.10 호환 확인됨)
-- OS : Window 11
-- 필수 패키지 : `requirements.txt` 참고
+1. Visual Studio Code 설치 (1.101.2)
+- https://code.visualstudio.com/
 
-2. 가상환경 생성 (권장)
+2. Python 설치 (3.10.11)
+- https://www.python.org/
+
+3. GitHub clone
+- clone 전에 Git 설치(2.50.0.2)
 ```
+# Git Bash에서
+git clone https://github.com/Jihun007/EduPulse.git
+cd EduPulse
+```
+
+4. 가상환경 생성 (권장)
+```
+# Git Bash에서
 # venv 사용 시
 python -m venv venv
-source venv/bin/activate      # Mac/Linux
-venv\Scripts\activate         # Windows
-
-# 또는 conda 사용 시
-conda create -n accessenv python=3.9
-conda activate accessenv
+source venv/Scripts/activate         # Windows
 ```
-3. 필수 패키지 설치
+5. 필수 패키지 설치
 ```
+pip install --upgrade pip
 pip install -r requirements.txt
 ```
-4. Jupyter Notebook 사용 (데이터 탐색/분석 단계)
+6. Jupyter Notebook 사용 (데이터 탐색/분석 단계)
 ```
 pip install jupyter
 jupyter notebook
 ```
-5. Streamlit 대시보드 실행 (결과 시각화)
+7. Streamlit 대시보드 실행 (결과 시각화)
 ```
-streamlit run ....py
+cd streamlit_app/
+streamlit run app.py
 ```
 
-### 간편 실행만 원하는 경우, README.env.md를 참고하세요.
-
-# 주요 화면 예시 (추후 추가)
+# 주요 화면 예시
+![image](./assets/screen.gif)
 
 # License
 본 프로젝트는 MIT License 하에 공개됩니다. 자세한 내용은 `LICENSE` 파일을 참고해주세요.
