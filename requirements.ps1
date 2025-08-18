@@ -24,6 +24,8 @@ if ($versionMatch) {
     Write-Host "Python 버전 확인에 실패했습니다." -ForegroundColor Yellow
 }
 
+Write-Host "Python 버전 확인 성공! 현재 버전: $pythonVersion" -ForegroundColor Green
+
 # 2) 가상환경 생성 (.venv 폴더)
 python -m venv .venv
 
@@ -38,7 +40,8 @@ pip install streamlit==1.47.0
 pip install jupyter==7.3.2
 pip install sqlite-bro==0.14.1
 pip install matplotlib==3.10.0
-pip install openpyxl==3.0.9
+pip install openpyxl==3.1.0
+pip install numpy==2.2.6
 
 Write-Host ""
 Write-Host "가상환경 설정 및 패키지 설치가 완료되었습니다." -ForegroundColor Green
