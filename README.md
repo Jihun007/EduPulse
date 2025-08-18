@@ -85,12 +85,7 @@ cd EduPulse
 # Git Bash에서
 # venv 사용 시
 python -m venv venv
-source venv/bin/activate      # Mac/Linux
-venv\Scripts\activate         # Windows
-
-# 또는 conda 사용 시
-conda create -n accessenv python=3.10.11
-conda activate accessenv
+source venv/Scripts/activate         # Windows
 ```
 5. 필수 패키지 설치
 ```
