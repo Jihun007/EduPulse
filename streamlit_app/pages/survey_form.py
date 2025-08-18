@@ -226,8 +226,8 @@ def survey():
 
         if qtype == "radio":
             st.markdown(f"<p style='font-size:16px; font-weight:bold; margin-bottom: -10rem;'>{qtitle}</p>", unsafe_allow_html=True)
-            answer = st.radio("", 
-            options=qoptions, key=qid, horizontal=True, index=None)
+            answer = st.radio(qtitle, 
+            options=qoptions, key=qid, horizontal=True, index=None, label_visibility="collapsed")
             res = option_to_num.get(answer)
             responses[qid] = res
                         
@@ -261,7 +261,7 @@ def survey():
 
         elif qtype == "selectbox":
             st.markdown(f"<p style='font-size:16px; font-weight:bold; margin-bottom: -10rem;'>{qtitle}</p>", unsafe_allow_html=True)
-            answer = st.selectbox("", options=qoptions, key=qid, index=None)
+            answer = st.selectbox(qtitle, options=qoptions, key=qid, index=None, label_visibility="collapsed")
             res = option_to_num.get(answer)
             responses[qid] = res
 

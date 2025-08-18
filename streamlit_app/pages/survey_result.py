@@ -30,7 +30,7 @@ def finish():
     import os
     # 이미지 경로를 계산합니다.
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    image_path = os.path.join(current_dir, '..', '..', 'image', 'handshake.png')
+    image_path = os.path.join(current_dir, '..', '..', 'assets', 'handshake.png')
 
 
     col1, col2, col3 = st.columns([1, 1, 1]) # [왼쪽 여백, 이미지 영역, 오른쪽 여백] 비율 조정 가능
