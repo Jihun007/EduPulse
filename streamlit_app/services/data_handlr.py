@@ -87,8 +87,8 @@ def save(data_list):
             DATABASE_FILE = 'edupulse.db'     # SQLite DB 파일명
             DATABASE_PATH = os.path.join(PROJECT_ROOT,'db', DATABASE_FILE)
             TABLE_NAME = 'DGSTFN'            # CSV로 내보낼 테이블명
-            OUTPUT_CSV_FILE = TABLE_NAME + '.csv' # 생성될 CSV 파일명
-            OUTPUT_FOLDER = 'data\survey'
+            OUTPUT_CSV_FILE = '2024_만족도조사' + '.csv' # 생성될 CSV 파일명
+            OUTPUT_FOLDER = 'data/survey/raw'
             
             
             sys.path.append(PROJECT_ROOT)  
