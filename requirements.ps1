@@ -34,10 +34,10 @@ Write-Host "가상환경 설치 및 필수 패키지 설치중..."
 
 # 2) pip 업그레이드
 Write-Host "pip 업그레이드 중..."
-python -m pip install --upgrade pip
+py -m pip install --upgrade pip
 
 # 3) 가상환경 생성 (.venv 폴더)
-python -m venv .venv
+py -m venv .venv
 
 # 4) 가상환경 활성화 및 필수 패키지 설치
 .venv\Scripts\Activate.ps1
