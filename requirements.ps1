@@ -40,7 +40,7 @@ python -m pip install --upgrade pip
 python -m venv .venv
 
 # 4) 가상환경 활성화 및 필수 패키지 설치
-.venv\Scripts\Activate.ps1
+source .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 
 Write-Host ""
