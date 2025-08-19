@@ -1,47 +1,69 @@
-# requirements.ps1
+# 실패 시 즉시 중단
+$ErrorActionPreference = 'Stop'
 
-# 인코딩 변경
-chcp 65001 > $null    # cmd 창 코드페이지를 UTF-8로
-[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+Write-Host "Python 버전 확인..."
+python --version
 
-# 1) Python 설치 및 버전 체크
-$pythonVersion = py --version 2>&1
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "Python이 설치되어 있지 않습니다. https://www.python.org/downloads/ 에서 설치하세요." -ForegroundColor Red
-    exit 1
-}
-
-$versionMatch = $pythonVersion -match "Python (\d+).(\d+).(\d+)"
-if ($versionMatch) {
-    $major = [int]$Matches[1]
-    $minor = [int]$Matches[2]
-
-    if ($major -lt 3 -or ($major -eq 3 -and $minor -lt 10)) {
-        Write-Host "Python 3.10 이상이 필요합니다. 현재 버전: $pythonVersion" -ForegroundColor Red
-        Write-Host "https://www.python.org/downloads/ 에서 최신 버전을 설치하세요."
-        exit 1
-    }
-
-    Write-Host "Python 버전 확인 성공! 현재 버전: $pythonVersion" -ForegroundColor Green
-    Write-Host ""
+# venv 생성
+if (!(Test-Path ".\.venv")) {
+    Write-Host "가상환경(.venv) 생성..."
+    python -m venv .venv
 } else {
-    Write-Host "Python 버전 확인에 실패했습니다." -ForegroundColor Yellow
-    Write-Host ""
-    exit 1
+    Write-Host "기존 .venv 감지됨. 생성 단계 건너뜀."
 }
 
-Write-Host "가상환경 설치 및 필수 패키지 설치중..."
+# 가상환경 활성화 (PowerShell 전용)
+$activate = ".\.venv\Scripts\Activate.ps1"
+if (!(Test-Path $activate)) {
+    throw "가상환경 활성화 스크립트가 없습니다: $activate (venv 생성 실패 여부 확인)"
+}
+Write-Host "가상환경 활성화..."
+& $activate
 
-# 2) pip 업그레이드
-Write-Host "pip 업그레이드 중..."
+# pip 인코딩/경로 안정화
+$env:PYTHONUTF8 = "1"
+
+Write-Host "pip 업그레이드..."
 python -m pip install --upgrade pip
 
-# 3) 가상환경 생성 (.venv 폴더)
-python -m venv .venv
+Write-Host "requirements 설치..."
+python -m pip install -r requirements.txt
 
-# 4) 가상환경 활성화 및 필수 패키지 설치
-.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
+Write-Host "완료"PowerShell 자동 스크립트(requirements.ps1)로 하고 싶다면
 
-Write-Host ""
-Write-Host "가상환경 설정 및 패키지 설치가 완료되었습니다." -ForegroundColor Green
+현재 스크립트에 source나 잘못된 활성화 명령이 들어있어 실패 중입니다. 아래 내용으로 교체하세요.
+
+C:\Users\lhy39\eduPulse\requirements.ps1
+
+# 실패 시 즉시 중단
+$ErrorActionPreference = 'Stop'
+
+Write-Host "Python 버전 확인..."
+python --version
+
+# venv 생성
+if (!(Test-Path ".\.venv")) {
+    Write-Host "가상환경(.venv) 생성..."
+    python -m venv .venv
+} else {
+    Write-Host "기존 .venv 감지됨. 생성 단계 건너뜀."
+}
+
+# 가상환경 활성화 (PowerShell 전용)
+$activate = ".\.venv\Scripts\Activate.ps1"
+if (!(Test-Path $activate)) {
+    throw "가상환경 활성화 스크립트가 없습니다: $activate (venv 생성 실패 여부 확인)"
+}
+Write-Host "가상환경 활성화..."
+& $activate
+
+# pip 인코딩/경로 안정화
+$env:PYTHONUTF8 = "1"
+
+Write-Host "pip 업그레이드..."
+python -m pip install --upgrade pip
+
+Write-Host "requirements 설치..."
+python -m pip install -r requirements.txt
+
+Write-Host "완료"
