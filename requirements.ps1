@@ -1,7 +1,8 @@
 # requirements.ps1
 
 # 인코딩 변경
-$OutputEncoding = [System.Text.Encoding]::UTF8
+chcp 65001 > $null    # cmd 창 코드페이지를 UTF-8로
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
 # 1) Python 설치 및 버전 체크
 $pythonVersion = python --version 2>&1
