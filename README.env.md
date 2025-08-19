@@ -29,6 +29,6 @@ pip install -r requirements.txt
 ### 4. 프로젝트 실행
 ```
 .\.venv\Scripts\activate
-cd EduPulse\streamlit_app
+cd streamlit_app
 streamlit run app.py
 ```
