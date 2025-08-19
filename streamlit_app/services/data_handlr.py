@@ -90,15 +90,10 @@ def save(data_list):
             OUTPUT_CSV_FILE = '2024_만족도조사' + '.csv' # 생성될 CSV 파일명
             OUTPUT_FOLDER = 'data/survey/raw'
             
-            
             sys.path.append(PROJECT_ROOT)  
             output_full_path = os.path.join(PROJECT_ROOT, OUTPUT_FOLDER, OUTPUT_CSV_FILE)
             # 폴더가 없으면 생성
             os.makedirs(os.path.dirname(output_full_path), exist_ok=True)
-            
-            print(f"-------PROJECT_ROOT!!{PROJECT_ROOT}")
-            print(f"-------output_full_path!!{output_full_path}")
-            print(f"-------DATABASE_PATH!!{DATABASE_PATH}")
 
             export(DATABASE_PATH, TABLE_NAME, output_full_path)
         except Exception as e:
