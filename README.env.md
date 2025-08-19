@@ -14,7 +14,8 @@ git clone https://github.com/Jihun007/EduPulse
 cd eduPulse
 ```
 ### 2. Windows 환경: 자동 가상환경 생성 및 패키지 설치 (권장)
- - Windows PowerShell에서 실행하세요:
+ - Windows PowerShell에서 실행하세요.
+ - Python 3.10.11 설치를 먼저 하세요.
 ```powershell
 powershell.exe -ExecutionPolicy Bypass -File ".\requirements.ps1"
 ```
