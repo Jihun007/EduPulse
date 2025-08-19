@@ -5,7 +5,7 @@ chcp 65001 > $null    # cmd 창 코드페이지를 UTF-8로
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
 # 1) Python 설치 및 버전 체크
-$pythonVersion = python --version 2>&1
+$pythonVersion = py --version 2>&1
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Python이 설치되어 있지 않습니다. https://www.python.org/downloads/ 에서 설치하세요." -ForegroundColor Red
     exit 1
