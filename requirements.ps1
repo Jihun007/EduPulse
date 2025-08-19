@@ -29,11 +29,13 @@ python -m pip install --upgrade pip
 Write-Host "requirements 설치..."
 python -m pip install -r requirements.txt
 
-Write-Host "완료"PowerShell 자동 스크립트(requirements.ps1)로 하고 싶다면
+Write-Host "완료"
 
-현재 스크립트에 source나 잘못된 활성화 명령이 들어있어 실패 중입니다. 아래 내용으로 교체하세요.
+# PowerShell 자동 스크립트(requirements.ps1)로 하고 싶다면
 
-C:\Users\lhy39\eduPulse\requirements.ps1
+# 현재 스크립트에 source나 잘못된 활성화 명령이 들어있어 실패 중입니다. 아래 내용으로 교체하세요.
+
+# C:\Users\lhy39\eduPulse\requirements.ps1
 
 # 실패 시 즉시 중단
 $ErrorActionPreference = 'Stop'
