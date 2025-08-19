@@ -29,6 +29,7 @@ pip install -r requirements.txt
 
 ### 4. 프로젝트 실행
 ```
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 .\.venv\Scripts\activate
 cd streamlit_app
 streamlit run app.py
